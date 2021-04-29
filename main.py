@@ -1,35 +1,37 @@
 import pandas as pd
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+import numpy as np
 
+# Read in IMDB movie metadata CSV file. 
 df = pd.read_csv('https://raw.githubusercontent.com/cwkteacher/Data/master/movie_metadata.csv')
 
-print(df.head(5))
-print(df.columns)
+# fig = plt.figure()
+# x = np.arange(6)
+# y = np.arange(6)
+# plt.plot(x, y)
+# plt.xlabel("Number of donuts eaten")
+# plt.ylabel("Miles unicycled")
+# plt.title("Correlation does not equal Causation")
+# fig.savefig("a_plot.png")
 
-print(df['director_name'])
+# initializing matplotlib figure
+fig = plt.figure(figsize=(11,8))
 
-cols = ['movie_title', 'facenumber_in_poster']
-print(df[cols])
+# total number of facebook likes for each leading actor
+actor = df.groupby(['actor_1_name'])['actor_1_facebook_likes'].sum()
+actor = actor.sort_values(ascending=False)
+print(actor.head(10))
+actor[:10].plot(kind="barh")
+plt.xlabel("Facebook Likes")
+plt.title("10 Actors with Most Facebook Likes")
+fig.savefig('actor.png')
 
-# movies with IMDB score > 7.5
+fig = plt.figure()
 
-rating = df[df['imdb_score'] > 7.5]
-print(rating[['movie_title','imdb_score']])
-
-# How many movies came from each country?
-country = df['country'].value_counts()
-print(country.head(10))
-
-# Which director made the most money?
-df_gross = df.groupby('director_name')['gross'].sum()
-df_gross = df_gross.sort_values(ascending=False)
-print(df_gross.head(10))
-
-# df_gross['num_movies'] = df.groupby(['director_name'])['movie_title'].count().squeeze()
-# print(df_gross.head(10))
-
-# How many movies were made each year?
-df_movies_year = df.groupby(['title_year'])['movie_title'].count()
-print(df_movies_year.head(50))
-
-langs = df['language'].unique()
-print(langs)
+# number of movies made by each director
+num_movies = df['director_name'].value_counts()[:15]
+print(num_movies)
+num_movies.plot(kind="barh")
+fig.savefig('num_movies.png')
